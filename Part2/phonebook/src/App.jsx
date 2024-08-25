@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import axios from 'axios';
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -11,6 +12,13 @@ const App = () => {
   ]) 
   const [newPerson, setNewPerson] = useState({name:'', phoneNumber:''})
 
+
+  // fetch('http://localhost:3001/notes').then(res=> {
+  //   // const data = JSON.parse(res)
+  //   console.log(res.body)
+  //   console.log(res)
+  // })
+  
 
   const [search, setSearch] = useState('')
   const [list, setList] = useState([])
@@ -35,6 +43,15 @@ const App = () => {
     const filteredList = persons.filter(person => person.name.slice(0, e.value.length).toLowerCase() === e.value.toLowerCase())
     setList(filteredList)
   }
+
+  useEffect(()=>{
+    axios
+    .get('http://localhost:3001/persons')
+    .then(res => {
+      const data = res.data; 
+      setPersons(data)
+  })
+  },[])
   return (
     <div>
       <h2>Phonebook</h2>
