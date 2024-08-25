@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import axios from 'axios';
+import phoneServices from './services/phonebook.tsx'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -11,15 +11,6 @@ const App = () => {
      }
   ]) 
   const [newPerson, setNewPerson] = useState({name:'', phoneNumber:''})
-
-
-  // fetch('http://localhost:3001/notes').then(res=> {
-  //   // const data = JSON.parse(res)
-  //   console.log(res.body)
-  //   console.log(res)
-  // })
-  
-
   const [search, setSearch] = useState('')
   const [list, setList] = useState([])
   
@@ -30,10 +21,14 @@ const App = () => {
   
   const onSubmitForm = (event) =>{
     event.preventDefault();
+    
     if(persons.find(item => item.name.toLowerCase() === nameObject.name.toLowerCase())) {
-      alert(`${nameObject.name} is already exist in list.`)
+      const samePerson = persons.find(person => person.name === nameObject.name)
+      phoneServices.changePhone(nameObject, samePerson.id).then(res => {
+        setPersons(persons.map(person => person.id !== samePerson.id ? person : res.data))
+      })
     } else{
-      setPersons(persons.concat(nameObject))
+      getAllListHandle();
       setNewPerson({name:'', phoneNumber:''});
     }
   }
@@ -45,13 +40,29 @@ const App = () => {
   }
 
   useEffect(()=>{
-    axios
-    .get('http://localhost:3001/persons')
-    .then(res => {
+    phoneServices.getList().then(res => {
       const data = res.data; 
       setPersons(data)
-  })
+    })
   },[])
+
+  const getAllListHandle = () => {
+    phoneServices.addNewPhone().then(res => {
+      setPersons(persons.concat(nameObject))
+    })
+  }
+
+  const deletePhoneHandle = (id) => {
+    const name = persons.find(item => item.id === id);
+    if (window.confirm(`Do you really want to delete ${name.name + ' ' + name.phoneNumber } from the phonebook?`)) {
+      phoneServices.deletePhone(id).then(res => {
+        setPersons(persons.filter(person => person.id !== res.data.id))
+      })
+    }
+    
+  }
+  
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -60,7 +71,7 @@ const App = () => {
       <PersonForm newPerson={newPerson} setNewPerson={setNewPerson} onSubmitForm={onSubmitForm} />
       
       <h2>List</h2>
-      <Persons list={list} persons={persons} search={search}/>
+      <Persons list={list} persons={persons} search={search} onDeleteHandle={deletePhoneHandle}/>
      
     </div>
   )
