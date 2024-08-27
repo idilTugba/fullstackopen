@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import phoneServices from './services/phonebook.tsx'
+import Error from './components/Error.tsx'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -13,6 +14,8 @@ const App = () => {
   const [newPerson, setNewPerson] = useState({name:'', phoneNumber:''})
   const [search, setSearch] = useState('')
   const [list, setList] = useState([])
+  const [errorMesage, setErrorMesage] = useState(false)
+  const [notification, setNotification] = useState(null)
   
   const nameObject = {
     name: newPerson.name,
@@ -28,7 +31,7 @@ const App = () => {
         setPersons(persons.map(person => person.id !== samePerson.id ? person : res.data))
       })
     } else{
-      getAllListHandle();
+      addNewPersonOnBook();
       setNewPerson({name:'', phoneNumber:''});
     }
   }
@@ -46,9 +49,14 @@ const App = () => {
     })
   },[])
 
-  const getAllListHandle = () => {
-    phoneServices.addNewPhone().then(res => {
-      setPersons(persons.concat(nameObject))
+  const addNewPersonOnBook = () => {
+    phoneServices.addNewPhone(nameObject).then(res => {
+      setPersons(persons.concat(res.data))
+      setNotification(`${res.data.name} added to phonebook succesfly.`)
+      setErrorMesage(false)
+      setTimeout(()=>{
+        setNotification(null)
+      },5000)
     })
   }
 
@@ -57,9 +65,14 @@ const App = () => {
     if (window.confirm(`Do you really want to delete ${name.name + ' ' + name.phoneNumber } from the phonebook?`)) {
       phoneServices.deletePhone(id).then(res => {
         setPersons(persons.filter(person => person.id !== res.data.id))
-      })
+      }).catch(error => {
+        setNotification(`${name.name + ' ' + name.phoneNumber } already deleted.`)
+        setErrorMesage(true)
+        setTimeout(()=>{
+          setNotification(null)
+        },5000)
+      })    
     }
-    
   }
   
 
@@ -68,8 +81,8 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter search={search} onSearchHandle={onSearchHandle} />
       <h2>Add a new</h2>
+      <Error msg={notification} err={errorMesage}/>
       <PersonForm newPerson={newPerson} setNewPerson={setNewPerson} onSubmitForm={onSubmitForm} />
-      
       <h2>List</h2>
       <Persons list={list} persons={persons} search={search} onDeleteHandle={deletePhoneHandle}/>
      
