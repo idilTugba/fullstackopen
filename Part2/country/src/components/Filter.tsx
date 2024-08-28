@@ -1,13 +1,10 @@
 import React from "react";
 
-const Filter = ({ search, onSearchHandle }) => {
+const Filter = ({ search, onChange }) => {
   return (
     <div>
-      <span>filter shown with</span>
-      <input
-        value={search}
-        onChange={(event) => onSearchHandle(event.target)}
-      />
+      <span>find countries</span>
+      <input value={search} onChange={(e) => onChange(e.target)} />
     </div>
   );
 };
