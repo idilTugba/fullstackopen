@@ -8,10 +8,10 @@ import Error from './components/Error.tsx'
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas',
-      phoneNumber: '99-55-12341234'
+      number: '99-55-12341234'
      }
   ]) 
-  const [newPerson, setNewPerson] = useState({name:'', phoneNumber:''})
+  const [newPerson, setNewPerson] = useState({name:'', number:''})
   const [search, setSearch] = useState('')
   const [list, setList] = useState([])
   const [errorMesage, setErrorMesage] = useState(false)
@@ -19,7 +19,7 @@ const App = () => {
   
   const nameObject = {
     name: newPerson.name,
-    phoneNumber: newPerson.phoneNumber
+    number: newPerson.number
   }
   
   const onSubmitForm = (event) =>{
@@ -32,7 +32,7 @@ const App = () => {
       })
     } else{
       addNewPersonOnBook();
-      setNewPerson({name:'', phoneNumber:''});
+      setNewPerson({name:'', number:''});
     }
   }
 
@@ -45,6 +45,7 @@ const App = () => {
   useEffect(()=>{
     phoneServices.getList().then(res => {
       const data = res.data; 
+      console.log(data)
       setPersons(data)
     })
   },[])
@@ -62,11 +63,11 @@ const App = () => {
 
   const deletePhoneHandle = (id) => {
     const name = persons.find(item => item.id === id);
-    if (window.confirm(`Do you really want to delete ${name.name + ' ' + name.phoneNumber } from the phonebook?`)) {
+    if (window.confirm(`Do you really want to delete ${name.name + ' ' + name.number } from the phonebook?`)) {
       phoneServices.deletePhone(id).then(res => {
         setPersons(persons.filter(person => person.id !== res.data.id))
       }).catch(error => {
-        setNotification(`${name.name + ' ' + name.phoneNumber } already deleted.`)
+        setNotification(`${name.name + ' ' + name.number } already deleted.`)
         setErrorMesage(true)
         setTimeout(()=>{
           setNotification(null)

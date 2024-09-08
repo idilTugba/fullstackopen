@@ -13,9 +13,9 @@ const PersonForm = ({ onSubmitForm, newPerson, setNewPerson }) => {
       <div>
         Phone Number:{" "}
         <input
-          value={newPerson.phoneNumber}
+          value={newPerson.number}
           onChange={(e) =>
-            setNewPerson({ ...newPerson, phoneNumber: e.target.value })
+            setNewPerson({ ...newPerson, number: e.target.value })
           }
         />
       </div>

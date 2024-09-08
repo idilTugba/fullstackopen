@@ -6,13 +6,13 @@ const Persons = ({ search, list, persons, onDeleteHandle }) => {
       {search.length > 0
         ? list.map((item, i) => (
             <li key={item.name + i}>
-              {item.name + " " + item.phoneNumber}{" "}
+              {item.name + " " + item.number}{" "}
               <button onClick={() => onDeleteHandle(item.id)}>Delete</button>
             </li>
           ))
         : persons.map((item, i) => (
             <li key={item.name + i}>
-              {item.name + " " + item.phoneNumber}{" "}
+              {item.name + " " + item.number}{" "}
               <button onClick={() => onDeleteHandle(item.id)}>Delete</button>
             </li>
           ))}
